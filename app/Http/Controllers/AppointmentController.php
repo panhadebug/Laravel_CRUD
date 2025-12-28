@@ -15,9 +15,6 @@ class AppointmentController extends Controller
         return view('appointments.index', compact('appointments'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $customers = Customer::orderBy('name')->get();
@@ -28,9 +25,6 @@ class AppointmentController extends Controller
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         Appointment::create($request->validate([
@@ -45,35 +39,37 @@ class AppointmentController extends Controller
             ->with('success', 'Appointment created.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        //
+        $appointment = Appointment::findOrFail($id);
+        $customers = Customer::orderBy('name')->get();
+        $services = Service::orderBy('name')->get();
+        return view(
+            'appointments.edit',
+            compact(['appointment', 'customers', 'services'])
+        );
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        //
+        $appointment = Appointment::findOrFail($id);
+        $appointment->update($request->validate([
+            // 'cid_fk' => 'required|exists:tbl_customer,cid',
+            'customer_id' => 'required|exists:customers,id',
+            'service_id' => 'required|exists:services,id',
+            'appointment_time' => 'required|date',
+            'status' => 'required|in:pending,confirmed,cancelled',
+        ]));
+
+        return redirect()->route('appointments.index')
+            ->with('success', 'Appointment updated.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        $appointment = Appointment::findOrFail($id);
+        $appointment->delete();
+        return redirect()->route('appointments.index')
+            ->with('success', 'Appointment deleted.');
     }
 }

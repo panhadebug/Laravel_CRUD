@@ -5,7 +5,7 @@
         <a href="{{ route('appointments.create') }}" class="btn btn-primary">Create New</a>
     </div>
     <table class="table table-hover table-dark">
-        <thead class="table-primary">
+        <thead class="table-active text-dark">
             <th>ID</th>
             <th>customer_id</th>
             <th>service_id</th>
